@@ -12,6 +12,7 @@ const Lamp = ({
   // Default styling of the component, delegating height
   const defaultStyle = {
     height: height 
+
   }
 
   const litStyle = {
@@ -43,7 +44,7 @@ Lamp.propTypes = {
 // Default values if not provided
 Lamp.defaultProps = {
   color: "#fff",
-  height: "40vh",
+  height: "50vh",
   intensity: .5,
 }
 

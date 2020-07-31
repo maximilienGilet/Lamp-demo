@@ -85,8 +85,7 @@ export default function Home() {
             />
           </div>
         </section>
-        <Card className={styles.options} >
-          <CardContent>
+        <Card flat className={styles.options} >
             <h3 style={{ padding: "1em", paddingBottom: 0, textAlign: "center" }}>
               Intensité
             </h3>
@@ -126,12 +125,12 @@ export default function Home() {
                 </IconButton>
               </div>
             </div>
-          </CardContent>
           <br />
           <ToggleButtonGroup
             mandatory
             rounded
             onChange={(event) => reduce('setColor', event.active)}
+            className={styles.colorDots}
             value={color}
           // onChange={this.mandatoryGroupChange.bind(this)}
           >
