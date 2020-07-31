@@ -1,11 +1,56 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import Head from "next/head";
+import {
+  Avatar,
+  Switch,
+  IconButton,
+  Divider,
+  Card,
+  CardContent,
+  ToggleButtonGroup,
+  ToggleButton,
+} from "ui-neumorphism";
+import { Sun, Moon } from "react-feather";
+import Lamp from "../components/lamp";
+import styles from "../styles/Home.module.css";
+import colors from "../util/colors";
+
+
+
+const defaultIntensity = 50;
 
 export default function Home() {
+  const [lit, setLit] = React.useState(false);
+  const [intensity, setIntensity] = React.useState(defaultIntensity);
+  const [color, setColor] = React.useState(colors[0]);
+
+  const reduce = (action, args) => {
+    switch (action) {
+      case "toggleLight": // Toggle the lamp
+        setLit(args);
+        // TODO: make API call
+        break;
+      case "setIntensity": // update light value
+        let value = parseInt(args);
+        // fix cases where value is out boudaries
+        if (value > 100){value = 100}
+        if (value < 1){value = 1}
+        // update intensity value
+        setIntensity(value);
+        // TODO: make API call
+        break;
+      case "setColor": // change the color according to the selected one
+        setColor(args);
+        // TODO: make API call
+        break;
+      default:
+        throw Error("You must provide a valid reducer");
+    }
+  };
+
   return (
     <div className={styles.container}>
       <Head>
-        <title>Create Next App</title>
+        <title>Salon</title>
         <link rel="icon" href="/favicon.ico" />
         <meta charset='utf-8' />
         <meta http-equiv='X-UA-Compatible' content='IE=edge' />
@@ -18,60 +63,97 @@ export default function Home() {
         <link href='/favicon-16x16.png' rel='icon' type='image/png' sizes='16x16' />
         <link href='/favicon-32x32.png' rel='icon' type='image/png' sizes='32x32' />
         <link rel="apple-touch-icon" href="/apple-icon.png"></link>
-        <meta name="theme-color" content="#8a2be2"/>
+        <meta name="theme-color" content="#8a2be2" />
       </Head>
-
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
+        <section className={styles.heading}>
+          <div>
+            <h1 className={styles.title}>Salon</h1>
+            <Switch
+              id="lit"
+              label={lit ? "Allumé" : "Éteint"}
+              checked={lit}
+              onChange={(event) => reduce("toggleLight", event.checked)}
+            />
+          </div>
+          <div>
+            <Lamp 
+              on={lit} 
+              color={color}
+              intensity={intensity / 100} 
+              height={"50vh"}
+            />
+          </div>
+        </section>
+        <Card className={styles.options} >
+          <CardContent>
+            <h3 style={{ padding: "1em", paddingBottom: 0, textAlign: "center" }}>
+              Intensité
+            </h3>
+            <div className={styles.intensity}>
+              <div className={styles.icon}>
+                <IconButton 
+                  size="large" 
+                  rounded 
+                  text={intensity <= 1} 
+                  onClick={(event) => reduce('setIntensity', intensity - 5)}
+                  disabled={intensity <= 1}
+                >
+                  <Moon />
+                </IconButton>
+              </div>
+              <input
+                className={`${styles.intensitySlider} ${lit ? styles.lit : ""}`}
+                type="range"
+                min={1}
+                max={100}
+                value={intensity}
+                // defaultValue={50}
+                id="myRange"
+                onChange={(event) => {
+                  reduce("setIntensity", event.target.value);
+                }}
+              />
+              <div className={styles.icon}>
+                <IconButton 
+                  size="large" 
+                  rounded 
+                  text={intensity >= 100} 
+                  onClick={(event) => reduce('setIntensity', intensity + 5)}
+                  disabled={intensity >= 100}
+                >
+                  <Sun />
+                </IconButton>
+              </div>
+            </div>
+          </CardContent>
+          <br />
+          <ToggleButtonGroup
+            mandatory
+            rounded
+            onChange={(event) => reduce('setColor', event.active)}
+            value={color}
+          // onChange={this.mandatoryGroupChange.bind(this)}
           >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+            {colors.map((c) => (
+              <ToggleButton key={c} size="large" value={c}>
+                <Avatar size="small" bgColor={c} />
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+        </Card>
       </main>
 
-      <footer className={styles.footer}>
+      {/* <footer className={styles.footer}>
         <a
           href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{' '}
+          Powered by{" "}
           <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
         </a>
-      </footer>
+      </footer> */}
     </div>
-  )
+  );
 }
