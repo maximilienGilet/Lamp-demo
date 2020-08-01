@@ -22,7 +22,6 @@ const Lamp = ({
   }
 
   return (
-    <>
       <img
         src="/images/aladin.png"
         alt="Aladin"
@@ -30,7 +29,6 @@ const Lamp = ({
         // merge default & lit styles if lamp is on
         style={on ? {...defaultStyle, ...litStyle} : defaultStyle}
       />
-    </>
   );
 }
 
