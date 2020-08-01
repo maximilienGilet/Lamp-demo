@@ -1,20 +1,16 @@
-import Head from "next/head";
 import {
-  Avatar,
   Switch,
   IconButton,
-  Divider,
   Card,
   CardContent,
-  ToggleButtonGroup,
-  ToggleButton,
 } from "ui-neumorphism";
 import { Sun, Moon } from "react-feather";
 import Lamp from "../components/lamp";
+import ColorButton from "../components/colorButton";
+import HueSlider from "../components/hueSlider";
 import styles from "../styles/Home.module.css";
 import colors from "../util/colors";
-
-
+import hsl2hex from "../util/hsl2hex";
 
 const defaultIntensity = 50;
 
@@ -22,6 +18,7 @@ export default function Home() {
   const [lit, setLit] = React.useState(false);
   const [intensity, setIntensity] = React.useState(defaultIntensity);
   const [color, setColor] = React.useState(colors[0]);
+  const [hue, setHue] = React.useState(180);
 
   const reduce = (action, args) => {
     switch (action) {
@@ -32,8 +29,8 @@ export default function Home() {
       case "setIntensity": // update light value
         let value = parseInt(args);
         // fix cases where value is out boudaries
-        if (value > 100){value = 100}
-        if (value < 1){value = 1}
+        if (value > 100) { value = 100 }
+        if (value < 1) { value = 1 }
         // update intensity value
         setIntensity(value);
         // TODO: make API call
@@ -42,6 +39,11 @@ export default function Home() {
         setColor(args);
         // TODO: make API call
         break;
+      case "setHue":
+        // update the hue
+        setHue(args);
+        reduce('setColor', hsl2hex(args, 90, 50));
+        break;
       default:
         throw Error("You must provide a valid reducer");
     }
@@ -49,22 +51,6 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <Head>
-        <title>Salon</title>
-        <link rel="icon" href="/favicon.ico" />
-        <meta charset='utf-8' />
-        <meta http-equiv='X-UA-Compatible' content='IE=edge' />
-        <meta name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no' />
-        <meta name='description' content='Description' />
-        <meta name='keywords' content='Keywords' />
-        <title>Alad1 - gestion de votre lampe connectée</title>
-
-        <link rel="manifest" href="/manifest.json" />
-        <link href='/favicon-16x16.png' rel='icon' type='image/png' sizes='16x16' />
-        <link href='/favicon-32x32.png' rel='icon' type='image/png' sizes='32x32' />
-        <link rel="apple-touch-icon" href="/apple-icon.png"></link>
-        <meta name="theme-color" content="#8a2be2" />
-      </Head>
       <main className={styles.main}>
         <section className={styles.heading}>
           <div>
@@ -77,82 +63,76 @@ export default function Home() {
             />
           </div>
           <div>
-            <Lamp 
-              on={lit} 
+            <Lamp
+              on={lit}
               color={color}
-              intensity={intensity / 100} 
+              intensity={intensity / 100}
               height={"50vh"}
             />
           </div>
         </section>
-        <Card flat className={styles.options} >
-            <h3 style={{ padding: "1em", paddingBottom: 0, textAlign: "center" }}>
-              Intensité
+        <Card flat className={styles.options} style={{ transform: lit ? "none" : "translateY(calc(50vh - 20px))" }} >
+          <h3 style={{ padding: "1em", paddingBottom: 0, textAlign: "center" }}>
+            Intensité
             </h3>
-            <div className={styles.intensity}>
-              <div className={styles.icon}>
-                <IconButton 
-                  size="large" 
-                  rounded 
-                  text={intensity <= 1} 
-                  onClick={(event) => reduce('setIntensity', intensity - 5)}
-                  disabled={intensity <= 1}
-                >
-                  <Moon />
-                </IconButton>
-              </div>
-              <input
-                className={`${styles.intensitySlider} ${lit ? styles.lit : ""}`}
-                type="range"
-                min={1}
-                max={100}
-                value={intensity}
-                // defaultValue={50}
-                id="myRange"
-                onChange={(event) => {
-                  reduce("setIntensity", event.target.value);
-                }}
-              />
-              <div className={styles.icon}>
-                <IconButton 
-                  size="large" 
-                  rounded 
-                  text={intensity >= 100} 
-                  onClick={(event) => reduce('setIntensity', intensity + 5)}
-                  disabled={intensity >= 100}
-                >
-                  <Sun />
-                </IconButton>
-              </div>
+          <div className={styles.intensity}>
+            <div className={styles.icon}>
+              <IconButton
+                size="large"
+                rounded
+                text={intensity <= 1}
+                onClick={(event) => reduce('setIntensity', intensity - 5)}
+                disabled={intensity <= 1}
+              >
+                <Moon />
+              </IconButton>
             </div>
+            <input
+              className={`${styles.intensitySlider} ${lit ? styles.lit : ""}`}
+              type="range"
+              min={1}
+              max={100}
+              value={intensity}
+              id="intensityRange"
+              onChange={(event) => {
+                reduce("setIntensity", event.target.value);
+              }}
+            />
+            <div className={styles.icon}>
+              <IconButton
+                size="large"
+                rounded
+                text={intensity >= 100}
+                onClick={(event) => reduce('setIntensity', intensity + 5)}
+                disabled={intensity >= 100}
+              >
+                <Sun />
+              </IconButton>
+            </div>
+          </div>
           <br />
-          <ToggleButtonGroup
-            mandatory
-            rounded
-            onChange={(event) => reduce('setColor', event.active)}
-            className={styles.colorDots}
-            value={color}
-          // onChange={this.mandatoryGroupChange.bind(this)}
-          >
+          <div className={styles.colorDots} >
             {colors.map((c) => (
-              <ToggleButton key={c} size="large" value={c}>
-                <Avatar size="small" bgColor={c} />
-              </ToggleButton>
+              <ColorButton
+                key={c}
+                size="medium"
+                rounded
+                onClick={() => reduce('setColor', c)}
+                active={c === color}
+                color={c}
+              />
             ))}
-          </ToggleButtonGroup>
+          </div>
+          <CardContent style={{ background: "none" }}>
+            <HueSlider
+              value={hue}
+              onChange={(event) => {
+                reduce("setHue", event.target.value);
+              }}
+            />
+          </CardContent>
         </Card>
       </main>
-
-      {/* <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{" "}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer> */}
     </div>
   );
 }
