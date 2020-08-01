@@ -1,0 +1,43 @@
+.hueSlider {
+  width: 100%;
+  color: rgba(0, 0, 0, 0.93);
+  height: 45px;
+  border-radius: 60px;
+  background-color: #e4ebf5;
+  box-shadow: inset -1px -1px 3px #fff,
+    inset 1px 1px 3px #bec8e4;
+  border-top-color: rgb(46, 52, 64);
+  border-color: rgb(46, 52, 64);
+  outline: none;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+/*Chrome*/
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  .hueSlider {
+    overflow: hidden;
+    /* width: 80px; */
+    -webkit-appearance: none;
+    background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);;
+  }
+
+  .hueSlider::-webkit-slider-runnable-track {
+    height: 40px;
+  }
+
+  .hueSlider::-webkit-slider-thumb {
+    width: 40px;
+    -webkit-appearance: none;
+    height: 40px;
+    border-radius: 60px;
+    cursor: ew-resize;
+    backdrop-filter: blur(12px);
+    background-color:rgb(228, 235, 245);
+    box-shadow:rgb(190, 200, 228) 2px 2px 5px 0px, rgb(255, 255, 255) -2px -2px 5px 0px;
+  }
+}
+
+.hueSlider{
+  width: 100%;
+}
