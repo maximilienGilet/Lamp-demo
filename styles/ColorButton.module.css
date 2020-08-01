@@ -1,0 +1,17 @@
+.colorButton{
+  /* padding:  .5em; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Reuse the provided active shadow */
+.colorButton.active{
+  box-shadow:rgb(255, 255, 255) -1px -1px 3px 0px inset, rgb(190, 200, 228) 1px 1px 3px 0px inset;
+  /* border: 1px solid red; */
+}
+
+/* style the inner button */
+.colorButton span {
+  /* margin: 1em; */
+}
